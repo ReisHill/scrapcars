@@ -247,3 +247,5 @@
 .reg-start .registration-entry{flex:1;min-width:0}
 .reg-start .reg-row>.btn{width:auto;min-width:160px;min-height:58px;flex-shrink:0}
 @media(max-width:580px){.reg-start .reg-row,.simple-home .hero .reg-row{flex-direction:column;align-items:stretch;gap:12px}.reg-start .registration-entry{width:100%;flex:auto}.reg-start .reg-row>.btn,.simple-home .hero .reg-row>.btn{width:100%;min-width:0;min-height:56px}}
+/* No fixed sales banner: the footer needs only its natural spacing. */
+@media(max-width:580px){.home-footer{padding-bottom:27px}.footer{padding-bottom:25px}}
