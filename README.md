@@ -72,3 +72,11 @@ When enabling email, add a server-side endpoint that validates every field and r
 ## Before public launch
 
 Confirm the final brand/domain, real business contact details, collection/payment terms and privacy information. Add only verified licences and genuine reviews. Quote delivery, a domain purchase and DNS changes have not been completed simply by creating this repository.
+
+### Production confirmation contract
+
+The sent confirmation shows the request summary and an **aim to reply within an hour**, not a guaranteed automated valuation. Keep the business reply target accurate as operations evolve. In preview mode the same layout explicitly says no email has been sent.
+
+To enable the live state, the future quote handler must return JSON `{ "status": "sent", "request_id": "unique-reference" }` **only after the email provider accepts the request email**. A generic 200 response or a queued request does not show a sent confirmation. Request references accept 1–100 letters, numbers, underscores or hyphens. Return an error if sending fails, so the visitor retains their form and can retry. An accepted provider send is not a guarantee of inbox delivery.
+
+Sent requests cannot be edited locally as if the original email changed. The edit action is available only in the unsent preview; after a real send, the visitor is directed to reply to the team's email if corrections are needed. Automating the team's response will require the server/email workflow, still not connected in this version.

@@ -134,8 +134,8 @@ if (quoteForm) {
       submitButton.textContent = 'Sending your request…';
       try {
         const response = await fetch(QUOTE_CONFIG.endpoint, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-        if (!response.ok) throw new Error('Quote delivery failed');
-        renderSummary(payload, true);
+        const receipt = await readDeliveryReceipt(response);
+        renderSummary(payload, true, receipt.request_id);
       } catch {
         error.textContent = 'Your request could not be sent. Your details are still here — please try again.';
         error.hidden = false;
@@ -147,36 +147,68 @@ if (quoteForm) {
     }
   });
 }
-function renderSummary(data, delivered) {
+// The live endpoint must return this receipt only after its email provider
+// accepts the request email. HTTP 200 alone is not evidence of a sent email.
+async function readDeliveryReceipt(response) {
+  if (!response.ok) throw new Error('Quote delivery failed');
+  const receipt = await response.json();
+  if (receipt?.status !== 'sent' || typeof receipt.request_id !== 'string' || !/^[A-Za-z0-9_-]{1,100}$/.test(receipt.request_id)) {
+    throw new Error('Email sending was not confirmed');
+  }
+  return receipt;
+}
+function renderSummary(data, delivered, requestId = null) {
   const target = document.querySelector('#quote-content');
   const oldHeading = document.querySelector('.quote-heading');
   if (oldHeading) oldHeading.hidden = true;
   target.classList.remove('quote-layout');
   const labels = { running: 'Running & complete', 'non-runner': 'Not running', damaged: 'Damaged', incomplete: 'Missing parts', yes: 'Yes', no: 'No', unsure: 'Not sure' };
   const section = document.createElement('section');
-  section.className = 'success';
-  section.innerHTML = '<div class="success-icon"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></div><span class="eyebrow">' + (delivered ? 'Request received' : 'Preview complete') + '</span><h1 tabindex="-1">' + (delivered ? 'Your quote request has been sent.' : 'Your quote request is ready.') + '</h1><p></p><dl class="summary-list"></dl><div class="success-actions"><button class="btn outline" id="edit-request" type="button">Edit my details</button><a class="btn" href="/">Back to home →</a></div>';
-  section.querySelector('p').textContent = delivered ? 'Your details have been sent for a quote. This does not commit you to selling or book a collection.' : 'This is a preview. Nothing has been sent, no quote has been calculated and no collection has been booked. Your details are shown below so you can review the journey.';
-  const rows = [['Registration', data.registration], ['V5C logbook', labels[data.v5c]], ['Car condition', labels[data.condition]], ['Collection postcode', data.postcode], ['Email address', data.email], ['Phone number', data.phone || 'Not provided (optional)']];
+  section.className = 'success quote-confirmation';
+  section.innerHTML = '<div class="confirmation-heading"><span class="confirmation-symbol"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span><span class="confirmation-status"></span></div><h1 tabindex="-1">Thanks for your request.</h1><p class="confirmation-intro"></p><div class="reply-expectation"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div><strong>We aim to reply within an hour.</strong><p>As quickly as we can, by email to <span class="reply-email"></span>.</p></div></div><div class="confirmation-summary"><div class="confirmation-summary-heading"><h2>Your request</h2><span class="confirmation-reference" hidden></span></div><dl class="summary-list"></dl></div><div class="confirmation-next"><h2>What happens next?</h2><p>We’ll review your details and email your quote. If you’re happy with it, we’ll arrange pickup.</p><span class="confirmation-reassurance"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>No obligation to sell.</span></div><div class="success-actions"></div>';
+  section.querySelector('.confirmation-status').textContent = delivered ? 'Request sent' : 'Confirmation preview';
+  section.querySelector('.confirmation-intro').textContent = delivered ? 'Your quote request has been emailed to our team.' : 'Preview only — your request hasn’t been emailed yet.';
+  section.querySelector('.reply-email').textContent = data.email;
+  // Preview expectations demonstrate the live message, without promising a
+  // response to a request that has not been sent.
+  if (!delivered) section.querySelector('.reply-expectation p').firstChild.textContent = 'When sending is connected, we’ll reply to ';
+  if (delivered && requestId) {
+    const reference = section.querySelector('.confirmation-reference');
+    reference.textContent = 'Ref: ' + requestId;
+    reference.hidden = false;
+  }
+  const rows = [['Registration', data.registration], ['Car condition', labels[data.condition]], ['V5C logbook', labels[data.v5c]], ['Pickup postcode', data.postcode], ['Email address', data.email], ['Phone number', data.phone || 'Not provided']];
   for (const [label, value] of rows) {
     const row = document.createElement('div'); row.className = 'summary-row';
     const dt = document.createElement('dt'); dt.textContent = label;
     const dd = document.createElement('dd'); dd.textContent = value;
+    if (label === 'Registration') dd.className = 'summary-registration';
     row.append(dt, dd); section.querySelector('dl').append(row);
   }
-  // Keep the existing form in memory for an edit, with no local/session storage.
   const savedNodes = Array.from(target.childNodes);
+  if (!delivered) {
+    const edit = document.createElement('button');
+    edit.className = 'btn outline'; edit.id = 'edit-request'; edit.type = 'button'; edit.textContent = 'Edit my details';
+    edit.addEventListener('click', () => {
+      target.replaceChildren(...savedNodes);
+      target.classList.add('quote-layout');
+      if (oldHeading) oldHeading.hidden = false;
+      const button = quoteForm.querySelector('button[type=submit]');
+      button.disabled = false;
+      button.innerHTML = 'Review my request <span aria-hidden="true">→</span>';
+      quoteForm.elements.reg.focus();
+      window.scrollTo({top:0,behavior:'instant'});
+    });
+    section.querySelector('.success-actions').append(edit);
+  }
+  const home = document.createElement('a'); home.className = 'btn'; home.href = '/'; home.textContent = 'Back to home →';
+  section.querySelector('.success-actions').append(home);
+  if (delivered) {
+    const change = document.createElement('p'); change.className = 'confirmation-change';
+    change.textContent = 'Need to change something? Reply to our email when it arrives.';
+    section.append(change);
+  }
   target.replaceChildren(section);
-  section.querySelector('#edit-request').addEventListener('click', () => {
-    target.replaceChildren(...savedNodes);
-    target.classList.add('quote-layout');
-    if (oldHeading) oldHeading.hidden = false;
-    const button = quoteForm.querySelector('button[type=submit]');
-    button.disabled = false;
-    button.innerHTML = 'Review my request <span aria-hidden="true">→</span>';
-    quoteForm.elements.reg.focus();
-    window.scrollTo({top:0,behavior:'instant'});
-  });
   section.querySelector('h1').focus();
   window.scrollTo({top:0,behavior:'instant'});
 }

@@ -249,3 +249,50 @@
 @media(max-width:580px){.reg-start .reg-row,.simple-home .hero .reg-row{flex-direction:column;align-items:stretch;gap:12px}.reg-start .registration-entry{width:100%;flex:auto}.reg-start .reg-row>.btn,.simple-home .hero .reg-row>.btn{width:100%;min-width:0;min-height:56px}}
 /* No fixed sales banner: the footer needs only its natural spacing. */
 @media(max-width:580px){.home-footer{padding-bottom:27px}.footer{padding-bottom:25px}}
+/* A calm confirmation, with the reply expectation before the details. */
+.quote-page .quote-confirmation{padding:32px;border-radius:18px}
+.confirmation-heading{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.confirmation-symbol{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:#e1efd1;color:#3c6a37}
+.confirmation-symbol .ico{width:26px;height:26px;stroke-width:2}
+.confirmation-status{color:#537746;font-size:12px;font-weight:700}
+.quote-page .quote-confirmation h1{font-size:37px;line-height:1.16;letter-spacing:-.05em;margin:0 0 14px}
+.quote-page .quote-confirmation .confirmation-intro{font-size:16px;line-height:1.7;margin:0}
+.reply-expectation{display:flex;gap:13px;align-items:flex-start;background:#edf4e2;border:1px solid #dbe8c9;border-radius:13px;padding:20px;margin:25px 0 30px}
+.reply-expectation>.ico{width:22px;height:22px;color:#66884f;margin-top:1px}
+.reply-expectation strong{display:block;font-size:16px;font-weight:700;line-height:1.5}
+.quote-page .reply-expectation p{font-size:14px;line-height:1.7;margin:5px 0 0}
+.reply-email{color:var(--ink);font-weight:600;overflow-wrap:anywhere}
+.confirmation-summary-heading{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:16px}
+.quote-page .quote-confirmation h2{font-size:18px;letter-spacing:-.025em}
+.confirmation-reference{font-size:11px;color:#7b8b70;overflow-wrap:anywhere}
+.quote-confirmation .summary-list{margin:0;border-top:1px solid #e0e6da}
+.quote-confirmation .summary-row{font-size:14px;padding:14px 0;grid-template-columns:1fr 1.45fr;gap:15px;align-items:center}
+.quote-confirmation .summary-row dd{font-weight:550}
+.quote-confirmation .summary-row .summary-registration{font-weight:800;font-size:17px;letter-spacing:.06em;background:#ffda31;border:1px solid #ddbd30;padding:6px 12px;border-radius:6px;width:fit-content;color:#182717}
+.confirmation-next{margin-top:27px}
+.quote-page .confirmation-next p{font-size:14px;line-height:1.8;margin:12px 0 0}
+.confirmation-reassurance{display:flex;align-items:center;gap:7px;color:#6c805d;font-size:12px;margin-top:13px}
+.confirmation-reassurance .ico{width:16px;height:16px}
+.quote-confirmation .success-actions{margin-top:27px;gap:10px}
+.quote-confirmation .success-actions .btn{flex:1;min-height:53px}
+.quote-page .confirmation-change{font-size:12px;line-height:1.7;color:#7b8972;margin-top:15px;text-align:center}
+@media(max-width:580px){
+ .quote-page .quote-confirmation{padding:0;border-radius:0}
+ .confirmation-heading{margin-bottom:19px;gap:10px}
+ .confirmation-symbol{width:43px;height:43px}
+ .quote-page .quote-confirmation h1{font-size:33px;max-width:320px}
+ .quote-page .quote-confirmation .confirmation-intro{font-size:14px}
+ .reply-expectation{padding:17px 15px;gap:11px;margin:21px 0 25px}
+ .reply-expectation strong{font-size:15px}
+ .quote-page .reply-expectation p{font-size:14px}
+ .quote-page .quote-confirmation h2{font-size:17px}
+ .quote-confirmation .summary-row{font-size:13px;padding:13px 0;grid-template-columns:1fr 1.4fr;gap:12px}
+ .quote-confirmation .summary-row .summary-registration{font-size:16px;padding:5px 9px}
+ .confirmation-next{margin-top:24px}
+ .quote-page .confirmation-next p{font-size:14px}
+ .quote-confirmation .success-actions{flex-direction:column}
+ .quote-confirmation .success-actions .btn{width:100%;flex:auto}
+ .quote-confirmation .success-actions .btn:not(.outline){order:-1}
+}
+/* Keep screen-reader focus on the confirmation title without a control outline. */
+.quote-page .quote-confirmation h1:focus{outline:none}
