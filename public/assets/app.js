@@ -1,7 +1,7 @@
 /* Quote integration boundary. Set a same-origin endpoint only after adding a
    server-side handler, rate limiting, validation and email delivery. Never put
    email-provider keys in this browser file. */
-const QUOTE_CONFIG = Object.freeze({ endpoint: null });
+const QUOTE_CONFIG = Object.freeze({ endpoint: document.querySelector('#quote-form')?.dataset.endpoint || null });
 const normaliseReg = value => value.toUpperCase().replace(/[^A-Z0-9]/g, '');
 const validReg = value => /^[A-Z0-9\s]{2,10}$/i.test(value) && /^(?=.*[A-Z])(?=.*\d)[A-Z0-9]{2,7}$/.test(normaliseReg(value));
 const normalisePostcode = value => {
@@ -129,6 +129,13 @@ if (quoteForm) {
     };
     const error = document.querySelector('#form-error');
     error.hidden = true;
+    const signature = JSON.stringify(payload);
+    if (quoteForm.dataset.submissionSignature !== signature) {
+      quoteForm.dataset.submissionSignature = signature;
+      quoteForm.dataset.submissionId = crypto.randomUUID();
+    }
+    payload.submission_id = quoteForm.dataset.submissionId;
+    payload.website = quoteForm.elements.website.value;
     if (QUOTE_CONFIG.endpoint) {
       submitButton.disabled = true;
       submitButton.textContent = 'Sending your request…';

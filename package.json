@@ -11,7 +11,7 @@
     "dev": "node scripts/dev.mjs",
     "preview": "node scripts/dev.mjs --no-watch",
     "test": "npm run build && node --test tests/*.test.cjs tests/*.test.mjs",
-    "check": "node --check public/assets/app.js && node --check public/assets/coverage.js && npm test",
+    "check": "node --check public/assets/app.js && node --check public/assets/coverage.js && node --check worker/index.mjs && npm test",
     "deploy": "npm run build && wrangler deploy",
     "cloudflare:dev": "npm run build && wrangler dev"
   },

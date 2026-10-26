@@ -65,9 +65,9 @@ Homepage and landing-page entry asks only for the registration. The next step pr
 
 Coverage is checked on the contact form using the full postcode via Postcodes.io. Supported boroughs are Birmingham, Sandwell (including West Bromwich and Smethwick), Dudley, Walsall and Wolverhampton. Postcode prefixes alone are not accepted as proof of coverage. Invalid, out-of-area and unavailable lookups block review; successful checks are cached in memory for five minutes. Only the postcode is sent to the lookup service.
 
-**The form is still a preview. It does not send email, save leads or calculate a price.** `QUOTE_CONFIG.endpoint` in `public/assets/app.js` is `null`. Preserve this until a real handler is deployed. The current privacy and website terms explain the preview.
+**The default build is still a preview and sends nothing.** `SITE_LIVE=true` adds the same-origin `/api/quote` endpoint to the form only after the required business settings and policy review are complete. The Cloudflare Worker validates the request, rechecks postcode coverage and sends it through Resend when its runtime settings/secrets are enabled. The ordinary Node dev server serves static previews; use `npm run cloudflare:dev` for Worker integration testing.
 
-When enabling email, add a server-side endpoint that validates every field and rechecks collection coverage before accepting a lead. Add abuse protection, delivery failure handling, suitable retention and a production privacy notice. Provider keys belong in Cloudflare secrets, never browser source. Update the preview notices and review button at the same time as enabling delivery.
+See [the launch plan](docs/launch.md) for the missing business/domain decisions, email setup, privacy/terms review and Search Console steps. No domain purchase, account setup or real email test has been completed by these code changes.
 
 ## Before public launch
 
@@ -77,6 +77,6 @@ Confirm the final brand/domain, real business contact details, collection/paymen
 
 The sent confirmation shows the request summary and an **aim to reply within an hour**, not a guaranteed automated valuation. Keep the business reply target accurate as operations evolve. In preview mode the same layout explicitly says no email has been sent.
 
-To enable the live state, the future quote handler must return JSON `{ "status": "sent", "request_id": "unique-reference" }` **only after the email provider accepts the request email**. A generic 200 response or a queued request does not show a sent confirmation. Request references accept 1–100 letters, numbers, underscores or hyphens. Return an error if sending fails, so the visitor retains their form and can retry. An accepted provider send is not a guarantee of inbox delivery.
+To enable the live state, the quote handler returns JSON `{ "status": "sent", "request_id": "unique-reference" }` **only after the email provider accepts the request email**. A generic 200 response or a queued request does not show a sent confirmation. Request references accept 1–100 letters, numbers, underscores or hyphens. Return an error if sending fails, so the visitor retains their form and can retry. An accepted provider send is not a guarantee of inbox delivery.
 
-Sent requests cannot be edited locally as if the original email changed. The edit action is available only in the unsent preview; after a real send, the visitor is directed to reply to the team's email if corrections are needed. Automating the team's response will require the server/email workflow, still not connected in this version.
+Sent requests cannot be edited locally as if the original email changed. The edit action is available only in the unsent preview; after a real send, the visitor is directed to reply to the team's email if corrections are needed. The request-email handler is prepared but not connected to a live account. Automated valuations or customer reply emails are not implemented.

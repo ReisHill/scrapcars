@@ -1,6 +1,6 @@
 # Cloudflare setup
 
-The project uses **Cloudflare Workers Static Assets**. No account-specific IDs or tokens are committed, and no domain has been purchased or selected.
+The project uses **Cloudflare Workers Static Assets**. No account IDs or tokens are committed, and no domain has been purchased or selected.
 
 ## Connect GitHub for automatic builds
 
@@ -21,7 +21,7 @@ The project uses **Cloudflare Workers Static Assets**. No account-specific IDs o
 
 Cloudflare installs package-lock.json dependencies before the build. The build also needs Python 3, available in the Cloudflare build image. Keep Node on 24, matching `.nvmrc`, or a supported Node 22+ version.
 
-`wrangler.jsonc` points at `dist/`, uses directory index HTML routing, and serves the custom 404 page with a 404 status. It does not enable an SPA fallback: each SEO page has its own generated HTML.
+`wrangler.jsonc` runs `worker/index.mjs` for `/api/*` and serves other requests as static assets from `dist/`. It uses directory index HTML routing, and serves the custom 404 page with a 404 status. It does not enable an SPA fallback: each SEO page has its own generated HTML.
 
 The GitHub `Build and test` workflow validates pushes and pull requests. Hosting is handled by Cloudflare's Git integration, so no Cloudflare token needs to be stored as a GitHub Actions secret for that route.
 
@@ -34,7 +34,7 @@ npx wrangler login
 SITE_ORIGIN=https://scrapcars.YOUR-ACCOUNT-SUBDOMAIN.workers.dev npm run deploy
 ```
 
-The account subdomain is assigned by Cloudflare; do not use the placeholder literally. The first deployment may be used to find the address, then rebuild with the returned origin and deploy again so canonical URLs are correct. Keep indexing off during this setup.
+The account subdomain is assigned by Cloudflare; do not use the placeholder literally. The first deployment may be used to find the address, then rebuild with the returned origin and deploy again so canonical URLs are correct. Keep indexing and SITE_LIVE off during this setup.
 
 Authenticate on your own computer through Wrangler's browser flow. Do not paste tokens into chat, files, shell command history or the repository. For noninteractive deployments, use an appropriately scoped Cloudflare API token supplied through the CI secret mechanism.
 
@@ -56,3 +56,7 @@ Domain registration and payment require a separate chosen domain and purchase. T
 - [Build configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)
 - [HTML routing and custom 404 pages](https://developers.cloudflare.com/workers/static-assets/routing/static-site-generation/)
 - [Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
+
+## Live quote email and policies
+
+Follow [launch.md](launch.md) for the separate build/runtime variables, Resend secret and verified sender domain, business settings, live policies and controlled end-to-end delivery test. Keep `SITE_LIVE=false` and `SITE_INDEXABLE=false` until these are ready. Default builds do not send anything.
