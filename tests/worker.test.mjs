@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import worker, {handleQuote,validateLead} from '../worker/index.mjs';
+import worker, {acknowledgement,handleQuote,validateLead} from '../worker/index.mjs';
 const lead={registration:'AB12 CDE',condition:'running',v5c:'yes',postcode:'B1 1BB',email:'seller@example.com',phone:null,website:'',submission_id:'75f7d571-d0d3-4ec2-87a8-f4b2d208c7fe'};
 const env={PUBLIC_ORIGIN:'https://example.com',QUOTE_DELIVERY_ENABLED:'true',RESEND_API_KEY:'test-only-key',QUOTE_TO:'quotes@example.com',QUOTE_FROM:'website@example.com',QUOTE_RATE_LIMITER:{limit:async()=>({success:true})}};
 const request=(body=lead,headers={})=>new Request('https://example.com/api/quote',{method:'POST',headers:{Origin:'https://example.com','Content-Type':'application/json','CF-Connecting-IP':'192.0.2.1',...headers},body:JSON.stringify(body)});
@@ -14,16 +14,25 @@ test('email is accepted only after server coverage and provider acceptance',asyn
  const calls=[];
  const fetcher=async(url,options)=>{
   calls.push({url,options});
-  return url.includes('postcodes.io')?coverage('Birmingham'):Response.json({id:'provider-123'});
+  return url.includes('postcodes.io')?coverage('Birmingham'):Response.json({data:[{id:'business-123'},{id:'customer-456'}]});
  };
  const response=await handleQuote(request(),env,fetcher);
  assert.equal(response.status,200);assert.equal(response.headers.get('Cache-Control'),'no-store');
  assert.deepEqual(await response.json(),{status:'sent',request_id:lead.submission_id});
  assert.equal(calls.length,2);
- const mail=JSON.parse(calls[1].options.body);
- assert.equal(mail.reply_to,lead.email);assert.deepEqual(mail.to,['quotes@example.com']);
- assert.match(mail.text,/Phone: Not provided/);assert.doesNotMatch(mail.text,/192\.0\.2\.1/);
- assert.equal(calls[1].options.headers['Idempotency-Key'],'quote/'+lead.submission_id);
+ assert.equal(calls[1].url,'https://api.resend.com/emails/batch');
+ const [business,customer]=JSON.parse(calls[1].options.body);
+ assert.equal(business.reply_to,lead.email);assert.deepEqual(business.to,['quotes@example.com']);
+ assert.match(business.text,/Phone: Not provided/);assert.doesNotMatch(business.text,/192\.0\.2\.1/);
+ assert.deepEqual(customer.to,[lead.email]);assert.equal(customer.reply_to,'quotes@example.com');
+ assert.match(customer.subject,/Scrap Cars Sorted/);assert.match(customer.text,/very shortly/);
+ assert.match(customer.html,/Scrap Cars Sorted/);assert.doesNotMatch(customer.html,/seller@example.com/);
+ assert.equal(calls[1].options.headers['Idempotency-Key'],'quote-pair/'+lead.submission_id);
+});
+test('acknowledgement escapes dynamic values in branded HTML',()=>{
+ const message=acknowledgement({...lead,registration:'AB12<>&"'});
+ assert.match(message.html,/AB12&lt;&gt;&amp;&quot;/);
+ assert.doesNotMatch(message.html,/AB12<>&"/);
 });
 test('out-of-area, unavailable lookup and provider failure never report sent',async()=>{
  for(const district of ['Coventry','Solihull','London']){
@@ -33,7 +42,7 @@ test('out-of-area, unavailable lookup and provider failure never report sent',as
  for(const lookup of [()=>new Response('',{status:503}),()=>Response.json({status:200,result:{}}),()=>{throw new Error('timeout');}]){
   assert.equal((await handleQuote(request(),env,lookup)).status,503);
  }
- for(const provider of [()=>new Response('',{status:500}),()=>Response.json({}),()=>Response.json({id:'<invalid>'})]){
+ for(const provider of [()=>new Response('',{status:500}),()=>Response.json({}),()=>Response.json({data:[{id:'one'}]}),()=>Response.json({data:[{id:'one'},{id:'<invalid>'}]})]){
   assert.equal((await handleQuote(request(),env,async url=>url.includes('postcodes.io')?coverage('Sandwell'):provider())).status,503);
  }
 });
