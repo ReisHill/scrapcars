@@ -38,6 +38,7 @@ def business_details(config):
  if config.get('contact_phone'):details+=f"<p>Phone: <a href=\"tel:{re.sub(r'[^+0-9]', '', config['contact_phone'])}\">{e('contact_phone')}</a></p>"
  if config.get('company_number'):details+=f"<p>Company number {e('company_number')}. Registered in {e('company_jurisdiction')}.</p>"
  if config.get('vat_number'):details+=f"<p>VAT number: {e('vat_number')}.</p>"
+ if config.get('waste_registration'):details+=f"<p>{e('waste_registration')}.</p>"
  if config.get('licence_details'):details+=f"<p>{e('licence_details')}</p>"
  return details
 
@@ -46,6 +47,7 @@ def public_business_details(config):
  details=f'<p>{business_identity(config)}.<br>Business location: {e("public_address")}. Collection by arrangement.<br><a href="mailto:{e("contact_email")}">{e("contact_email")}</a></p>'
  if config.get('contact_phone'):details+=f'<p>Phone: <a href="tel:{re.sub(r"[^+0-9]", "", config["contact_phone"])}">{e("contact_phone")}</a></p>'
  if config.get('vat_number'):details+=f'<p>VAT registered. VAT number: {e("vat_number")}.</p>'
+ if config.get('waste_registration'):details+=f'<p>{e("waste_registration")}.</p>'
  return details
 
 def production_policies(config):
