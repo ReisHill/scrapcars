@@ -24,6 +24,8 @@ with tempfile.TemporaryDirectory() as folder:
  write();loaded=load_settings(root,True,False)
  privacy,terms=production_policies(loaded)
  assert 'Example Ltd' in privacy and 'bank transfer' in terms
+ assert 'Your sale and payment are through our business' in terms
+ assert 'business receiving the vehicle from us' in privacy
  assert 'physical cash' in terms and 'No automatic' not in terms
  shutil.copytree('scripts',root/'scripts')
  shutil.copytree('public',root/'public')
