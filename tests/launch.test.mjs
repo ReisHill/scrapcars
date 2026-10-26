@@ -9,6 +9,13 @@ from pathlib import Path
 sys.path.insert(0,'scripts')
 from site_config import load_settings,production_policies
 config=json.loads(Path('config/site.json').read_text())
+assert config['service_role']=='introducer'
+assert 'ADAC Recovery Solutions, trading as Scrap Cars Sorted, is operated by Mr Mihail Adrian Cerchez as a sole trader' in production_policies(config)[0]
+assert 'CBDU616775' in production_policies(config)[0]
+assert 'ADY CAR recovery' in production_policies(config)[0]
+assert 'Scrap Car Network, the vehicle buyer' in production_policies(config)[0]
+assert 'Scrap Car Network, which pays you directly' in production_policies(config)[1]
+assert 'it does not buy your vehicle' in production_policies(config)[1]
 with tempfile.TemporaryDirectory() as folder:
  root=Path(folder);(root/'config').mkdir()
  def write(): (root/'config/site.json').write_text(json.dumps(config))
@@ -18,10 +25,12 @@ with tempfile.TemporaryDirectory() as folder:
   try: load_settings(root,live,index)
   except SystemExit: pass
   else: raise AssertionError('Incomplete launch allowed')
- config.update(brand='Example Cars',legal_name='Example Ltd',business_address='Example address',contact_email='quotes@example.com',google_business_url='',licence_details='Example licence details',service_role='buyer',quote_retention='Example retention',provider_retention_and_transfers='Example provider details',policies_reviewed=True)
+ config.update(brand='Example Cars',legal_name='Example Ltd',sole_trader=False,business_address='Example address',contact_email='quotes@example.com',google_business_url='',licence_details='Example licence details',service_role='buyer',quote_retention='Example retention',provider_retention_and_transfers='Example provider details',policies_reviewed=True)
  write();loaded=load_settings(root,True,False)
  privacy,terms=production_policies(loaded)
  assert 'Example Ltd' in privacy and 'bank transfer' in terms
+ assert 'Your sale and payment are through our business' in terms
+ assert 'business receiving the vehicle from us' in privacy
  assert 'physical cash' in terms and 'No automatic' not in terms
  shutil.copytree('scripts',root/'scripts')
  shutil.copytree('public',root/'public')
