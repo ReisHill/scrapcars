@@ -25,6 +25,7 @@ def business_details(config):
  brand=e('brand')
  identity=name if name==brand else f'{name}, trading as {brand}'
  details=f"<p>{identity}.<br>{e('business_address')}<br><a href=\"mailto:{e('contact_email')}\">{e('contact_email')}</a></p>"
+ if config.get('contact_phone'):details+=f"<p>Phone: <a href=\"tel:{re.sub(r'[^+0-9]', '', config['contact_phone'])}\">{e('contact_phone')}</a></p>"
  if config.get('company_number'):details+=f"<p>Company number {e('company_number')}. Registered in {e('company_jurisdiction')}.</p>"
  if config.get('vat_number'):details+=f"<p>VAT number: {e('vat_number')}.</p>"
  if config.get('licence_details'):details+=f"<p>{e('licence_details')}</p>"
