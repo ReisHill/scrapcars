@@ -17,7 +17,7 @@ with tempfile.TemporaryDirectory() as folder:
   try: load_settings(root,live,index)
   except SystemExit: pass
   else: raise AssertionError('Incomplete launch allowed')
- config.update(brand='Example Cars',legal_name='Example Ltd',business_address='Example address',contact_email='quotes@example.com',google_business_url='https://maps.google.com/example',licence_details='Example licence details',service_role='buyer',quote_retention='Example retention',provider_retention_and_transfers='Example provider details',policies_reviewed=True)
+ config.update(brand='Example Cars',legal_name='Example Ltd',business_address='Example address',contact_email='quotes@example.com',google_business_url='',licence_details='Example licence details',service_role='buyer',quote_retention='Example retention',provider_retention_and_transfers='Example provider details',policies_reviewed=True)
  write();loaded=load_settings(root,True,False)
  privacy,terms=production_policies(loaded)
  assert 'Example Ltd' in privacy and 'bank transfer' in terms
@@ -29,6 +29,7 @@ with tempfile.TemporaryDirectory() as folder:
  home=(root/'dist/index.html').read_text()
  quote=(root/'dist/quote/index.html').read_text()
  assert 'Example Cars' in home and 'LocalBusiness' in home
+ assert '"sameAs"' not in home
  assert 'scrap<em>local</em>' not in home
  assert 'Website preview' not in home and 'Website preview' not in quote
  assert 'data-endpoint="/api/quote"' in quote and 'Request my quote' in quote

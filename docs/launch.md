@@ -5,7 +5,7 @@ Prepared 26 October 2026. The domain `scrapcarsorted.co.uk` is connected to Clou
 ## Decisions needed
 
 - The public brand is **Scrap Cars Sorted** at `scrapcarsorted.co.uk`. Confirm whether this is also the registered legal name or a trading name of another person or entity.
-- Google Business Profile URL and the real-world business name it represents. Keep the website identity consistent with that business, or clearly explain a separate trading name. Do not rename the profile just to add search keywords or create a duplicate listing.
+- A Google Business Profile URL is optional. Use it only if the profile genuinely represents Scrap Cars Sorted; do not link an unrelated profile, rename one just to add keywords, or create a duplicate listing.
 - Legal owner/operator, contact/registered address, public email and optional business phone, company/VAT information where applicable.
 - The website passes enquiries to one buying and collection partner. Confirm the buyer's identity, licence/registration details and actual receiving/collection arrangements before live enquiries begin. Identify the buyer before a customer agrees to sell.
 - Quote inbox, email provider account and verified sending domain.
@@ -64,7 +64,7 @@ Add the purchased domain as a Worker Custom Domain; select apex or www as canoni
 
 1. Add a **Domain property** in Google Search Console. Verify using its exact DNS TXT record in Cloudflare. Search Console is the indexing/SEO console; Google Cloud Console is not additionally required for ordinary site indexing.
 2. Submit `https://chosen-domain/sitemap.xml`. Inspect the homepage and a representative location page, then request indexing. Keep the DNS verification record.
-3. Put the canonical website URL into the existing Google Business Profile. Link back to that profile from the website; local-business structured data includes it once configured. Do not fabricate reviews or aggregate ratings, or publish a private home address just to fill a schema field.
+3. If there is a genuine Google Business Profile for Scrap Cars Sorted, put the canonical website URL into it and add its URL to the site settings. Local-business structured data includes the profile only when configured. Do not fabricate reviews or aggregate ratings, or publish a private home address just to fill a schema field.
 4. Check indexing and mobile experience; strengthen useful location content and verified trust details. Watch real impressions/queries/leads before adding more pages. Avoid duplicate city pages with only the place name swapped.
 
 ## Official references

@@ -9,12 +9,12 @@ def load_settings(root, live, indexable):
  if indexable and not live:
   raise SystemExit('Indexing requires SITE_LIVE=true and completed launch settings.')
  if live:
-  required=['legal_name','business_address','contact_email','google_business_url','licence_details','service_role','quote_retention','provider_retention_and_transfers']
+  required=['legal_name','business_address','contact_email','licence_details','service_role','quote_retention','provider_retention_and_transfers']
   missing=[key for key in required if not isinstance(config.get(key),str) or not config[key].strip()]
   if missing:raise SystemExit('Complete config/site.json before launch: '+', '.join(missing))
   if config.get('policies_reviewed') is not True:raise SystemExit('Review the business details and policies, then set policies_reviewed=true.')
   if not re.fullmatch(r'[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+',config['contact_email']):raise SystemExit('Set a valid contact email.')
-  if not config['google_business_url'].startswith('https://'):raise SystemExit('Google Business URL must use HTTPS.')
+  if config.get('google_business_url') and not config['google_business_url'].startswith('https://'):raise SystemExit('Google Business URL must use HTTPS.')
   if config['service_role'] not in ('buyer','introducer'):raise SystemExit('service_role must be buyer or introducer.')
   if bool(config.get('company_number')) != bool(config.get('company_jurisdiction')):raise SystemExit('Company number and jurisdiction must be provided together.')
  return config
