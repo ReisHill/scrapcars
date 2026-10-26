@@ -2,6 +2,26 @@ const districts = ['Birmingham', 'Sandwell', 'Dudley', 'Walsall', 'Wolverhampton
 const emailPattern = /^[^\s@<>\r\n]+@[^\s@<>\r\n]+\.[^\s@<>\r\n]+$/;
 const json = (status, data) => Response.json(data, {status, headers:{'Cache-Control':'no-store', 'X-Content-Type-Options':'nosniff'}});
 const unavailable = () => json(503, {error:'Sending is unavailable. Your details have not been confirmed as sent. Please try again.'});
+const escapeHtml = value => value.replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+
+export function acknowledgement(lead) {
+  const registration = escapeHtml(lead.registration);
+  const reference = escapeHtml(lead.submission_id);
+  return {
+    subject: `We've got your ${lead.registration} quote request | Scrap Cars Sorted`,
+    text: [
+      'Hi there,', '',
+      `Thanks for getting in touch about ${lead.registration}. Your quote request has landed safely with Scrap Cars Sorted.`,
+      "We're taking a look and will be back to you very shortly with the next steps.", '',
+      `Your reference: ${lead.submission_id}`, '',
+      'There is no obligation to sell. Please wait until a price and collection details are agreed before making arrangements.', '',
+      'Need to add something? Just reply to this email or call 07973 566033.', '',
+      'Thanks,', 'The Scrap Cars Sorted team',
+      'scrapcarsorted.co.uk'
+    ].join('\n'),
+    html: `<!doctype html><html lang="en"><body style="margin:0;padding:24px;background:#f4f7f4;font-family:Arial,sans-serif;color:#18352b"><div style="max-width:560px;margin:auto;background:#fff;border-radius:18px;overflow:hidden"><div style="background:#153f32;padding:24px;color:#fff;font-size:22px;font-weight:700">Scrap Cars Sorted</div><div style="padding:28px"><p style="margin-top:0">Hi there,</p><h1 style="font-size:26px;line-height:1.25;margin:12px 0;color:#153f32">Thanks, we've got your request.</h1><p>Thanks for getting in touch about <strong>${registration}</strong>. Your quote request has landed safely with us.</p><p>We're taking a look and will be back to you very shortly with the next steps.</p><p style="padding:14px;background:#f4f7f4;border-radius:8px">Your reference: <strong>${reference}</strong></p><p>There's no obligation to sell. We'll confirm the price and collection details before you decide.</p><p>Need to add something? Reply to this email or call <a href="tel:07973566033" style="color:#153f32">07973 566033</a>.</p><p>Thanks,<br><strong>The Scrap Cars Sorted team</strong></p></div></div><p style="text-align:center;font-size:12px;color:#586b61">Scrap Cars Sorted · <a href="https://scrapcarsorted.co.uk/" style="color:#586b61">scrapcarsorted.co.uk</a></p></body></html>`
+  };
+}
 
 async function readBody(request) {
   const reader = request.body?.getReader();
@@ -75,14 +95,18 @@ export async function handleQuote(request, env, fetcher = fetch) {
       'Reference: '+lead.submission_id, 'Reply to this email to contact the seller.',
       'This is a quote enquiry, not a confirmed sale or collection.'
     ].join('\n');
-    const response = await fetcher('https://api.resend.com/emails',{
+    const thanks = acknowledgement(lead);
+    const response = await fetcher('https://api.resend.com/emails/batch',{
       method:'POST', signal:AbortSignal.timeout(12000),
-      headers:{Authorization:'Bearer '+env.RESEND_API_KEY,'Content-Type':'application/json','Idempotency-Key':'quote/'+lead.submission_id},
-      body:JSON.stringify({from:env.QUOTE_FROM,to:[env.QUOTE_TO],reply_to:lead.email,subject:'Car quote request: '+lead.registration,text})
+      headers:{Authorization:'Bearer '+env.RESEND_API_KEY,'Content-Type':'application/json','Idempotency-Key':'quote-pair/'+lead.submission_id},
+      body:JSON.stringify([
+        {from:'Scrap Cars Sorted <'+env.QUOTE_FROM+'>',to:[env.QUOTE_TO],reply_to:lead.email,subject:'Car quote request: '+lead.registration,text},
+        {from:'Scrap Cars Sorted <'+env.QUOTE_FROM+'>',to:[lead.email],reply_to:env.QUOTE_TO,...thanks}
+      ])
     });
     if (!response.ok) return unavailable();
     const receipt = await response.json();
-    if (typeof receipt.id !== 'string' || !/^[A-Za-z0-9_-]{1,100}$/.test(receipt.id)) return unavailable();
+    if (!Array.isArray(receipt.data) || receipt.data.length !== 2 || !receipt.data.every(item => typeof item.id === 'string' && /^[A-Za-z0-9_-]{1,100}$/.test(item.id))) return unavailable();
     // Accepted by email provider; not a guarantee of inbox delivery.
     return json(200,{status:'sent',request_id:lead.submission_id});
   } catch { return unavailable(); } // Never log the body, email address or secrets.

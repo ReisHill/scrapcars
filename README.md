@@ -49,7 +49,7 @@ Follow [docs/cloudflare.md](docs/cloudflare.md) to connect this GitHub repositor
 
 `SITE_ORIGIN` is the absolute origin used by canonical URLs, Open Graph metadata and the sitemap. It defaults to `http://localhost:3000` for a normal build; the local development server uses its configured port. Set it to the real Cloudflare URL or your final domain in Cloudflare **build variables** before deploying publicly.
 
-`SITE_INDEXABLE` defaults to `false`: generated HTML is `noindex, nofollow` and robots.txt disallows crawling. Use `SITE_INDEXABLE=true` only after the business details, live form and final domain are ready. Indexable builds reject localhost and non-HTTPS origins. The quote page remains noindex.
+`SITE_INDEXABLE` defaults to `false`: generated HTML is `noindex, nofollow`. Use `SITE_INDEXABLE=true` after the live form and final domain are ready. Indexable builds reject localhost and non-HTTPS origins. All public pages, including the quote and legal pages, are then indexable; the 404 page remains noindex.
 
 Example macOS/Linux build:
 
@@ -75,8 +75,8 @@ Confirm the final brand/domain, real business contact details, collection/paymen
 
 ### Production confirmation contract
 
-The sent confirmation shows the request summary and an **aim to reply within an hour**, not a guaranteed automated valuation. Keep the business reply target accurate as operations evolve. In preview mode the same layout explicitly says no email has been sent.
+The sent confirmation shows the request summary and says the team will be in touch shortly. Opening hours are 09:00–22:00 daily. In preview mode the same layout explicitly says no email has been sent.
 
-To enable the live state, the quote handler returns JSON `{ "status": "sent", "request_id": "unique-reference" }` **only after the email provider accepts the request email**. A generic 200 response or a queued request does not show a sent confirmation. Request references accept 1–100 letters, numbers, underscores or hyphens. Return an error if sending fails, so the visitor retains their form and can retry. An accepted provider send is not a guarantee of inbox delivery.
+To enable the live state, the quote handler returns JSON `{ "status": "sent", "request_id": "unique-reference" }` **only after the email provider accepts both the business notification and branded customer acknowledgement**. A generic 200 response or a queued request does not show a sent confirmation. Request references accept 1–100 letters, numbers, underscores or hyphens. Return an error if sending fails, so the visitor retains their form and can retry. Provider acceptance is not a guarantee of inbox delivery.
 
-Sent requests cannot be edited locally as if the original email changed. The edit action is available only in the unsent preview; after a real send, the visitor is directed to reply to the team's email if corrections are needed. The request-email handler is prepared but not connected to a live account. Automated valuations or customer reply emails are not implemented.
+Sent requests cannot be edited locally as if the original email changed. The edit action is available only in the unsent preview; after a real send, the visitor is directed to reply to the team's email if corrections are needed. Automated valuations are not implemented.

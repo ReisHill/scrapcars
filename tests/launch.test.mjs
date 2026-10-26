@@ -12,6 +12,7 @@ config=json.loads(Path('config/site.json').read_text())
 with tempfile.TemporaryDirectory() as folder:
  root=Path(folder);(root/'config').mkdir()
  def write(): (root/'config/site.json').write_text(json.dumps(config))
+ config['policies_reviewed']=False
  write()
  for live,index in [(True,False),(False,True)]:
   try: load_settings(root,live,index)
@@ -36,7 +37,8 @@ with tempfile.TemporaryDirectory() as folder:
  assert 'Preview only' not in quote
  assert 'bank transfer' in (root/'dist/terms/index.html').read_text()
  assert 'Example Ltd' in (root/'dist/privacy/index.html').read_text()
- assert 'noindex' in quote and 'index, follow' in home
+ assert 'index, follow' in quote and 'index, follow' in home
+ assert 'https://example.com/quote/' in (root/'dist/sitemap.xml').read_text()
  assert 'https://example.com/locations/birmingham/' in (root/'dist/sitemap.xml').read_text()
 
 `],{cwd:root,encoding:'utf8'});

@@ -18,7 +18,7 @@ Fill these into `config/site.json`. This file is public source; only enter busin
 - 21 static pages, including location pages, canonical URLs, sitemap, custom 404 and mobile quote journey.
 - Cloudflare Worker `scrapcars`, GitHub deployment configuration and `/api/quote` endpoint.
 - Server validation and full-postcode district checking; client checks alone cannot allow out-of-area enquiries.
-- Resend sends one plain-text request to the fixed business inbox; customer address is Reply-To. No marketing mail or automatic valuation. Customer acknowledgement emails are intentionally not sent, to keep cost and abuse low.
+- Resend accepts the business notification and a branded customer acknowledgement in one idempotent batch. The customer address is Reply-To on the business message; the business inbox is Reply-To on the customer message. No marketing mail or automatic valuation.
 - 5 attempts/minute per IP per Cloudflare location (approximate, not a strict global limit). Existing honeypot, same-origin enforcement, bounded JSON body, timeouts, no application lead database or request-body logging. Monitor abuse; add Turnstile if needed before exposing a heavily targeted site.
 - Retry idempotency via Resend for the same form submission, within its 24-hour window. Refreshing the page starts a new submission; this is not durable global deduplication. Provider acceptance is not proof of inbox delivery. Monitor delivery failures in Resend and test the real mailbox.
 - A concise privacy policy and quote-request terms template generated for live builds from confirmed settings. Review the rendered wording against actual operations, recipients and provider contracts before setting `policies_reviewed: true`. These cover enquiries, not every term of a later vehicle purchase/collection contract.
@@ -58,7 +58,7 @@ Add the purchased domain as a Worker Custom Domain; select apex or www as canoni
 2. Complete settings and review the rendered live policies/contact/about pages. Keep indexing off.
 3. Connect secrets and enable delivery for a controlled test. Submit your own in-area request on the actual domain and confirm it reaches the inbox, Reply-To works, details/reference match, and the page reports sent. Confirm retries do not duplicate the same request. Confirm out-of-area and failed delivery do not report success. Do not send test messages to other people's inboxes.
 4. Confirm the stated response target is realistic and business contact/licence details are accurate. Check the privacy notice against current Cloudflare, Resend and mailbox contracts/retention/transfer arrangements. There is no new application database, but emails and provider logs still contain personal data.
-5. Set `SITE_INDEXABLE=true` and redeploy only after the above passes. Verify robots/canonicals and noindex on the quote page. Site indexing does not guarantee ranking or immediate inclusion.
+5. Set `SITE_INDEXABLE=true` and redeploy only after the above passes. Verify robots, canonicals and indexable metadata on every public page; the 404 page remains noindex. Site indexing does not guarantee ranking or immediate inclusion.
 
 ## Google setup and ongoing SEO
 
