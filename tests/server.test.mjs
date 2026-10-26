@@ -10,7 +10,7 @@ test('local server handles real pages, query strings, redirects, 404s and unsafe
  t.after(()=>new Promise(resolve=>server.close(resolve)));
  const base=`http://127.0.0.1:${server.address().port}`;
  let response=await fetch(base+'/quote/?reg=AB12%20CDE');
- assert.equal(response.status,200);assert.match(await response.text(),/Get cash for:/);
+ assert.equal(response.status,200);assert.match(await response.text(),/Get a quote for:/);
  response=await fetch(base+'/locations/birmingham',{redirect:'manual'});
  assert.equal(response.status,308);assert.equal(response.headers.get('location'),'/locations/birmingham/');
  response=await fetch(base+'/does-not-exist/');assert.equal(response.status,404);assert.match(await response.text(),/Wrong turn/);
