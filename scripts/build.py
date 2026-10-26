@@ -145,6 +145,6 @@ page('/404.html','Page not found','Find your way back to ScrapLocal.',f'<section
 social_path=DIST/'assets/social.svg'
 social_path.write_text(social_path.read_text().replace('scraplocal',html.escape(BRAND)))
 (DIST/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{ORIGIN+p}</loc></url>' for p in pages if p not in ['/quote/','/privacy/','/terms/','/404.html'])+'</urlset>')
-(DIST/'robots.txt').write_text('User-agent: *\n'+('Allow: /\nDisallow: /quote/\n' if PUBLISHED else 'Disallow: /\n')+f'Sitemap: {ORIGIN}/sitemap.xml\n')
+(DIST/'robots.txt').write_text('User-agent: *\n'+('Allow: /\nDisallow: /quote/\n' if PUBLISHED else 'Allow: /\n')+f'Sitemap: {ORIGIN}/sitemap.xml\n')
 (DIST/'_headers').write_text('/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n/quote/*\n  Cache-Control: no-store\n  Referrer-Policy: no-referrer\n  X-Robots-Tag: noindex, noarchive\n')
 print(f'Generated {len(pages)} HTML pages, sitemap, robots and social assets.')
