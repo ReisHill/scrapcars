@@ -9,10 +9,13 @@ from pathlib import Path
 sys.path.insert(0,'scripts')
 from site_config import load_settings,production_policies
 config=json.loads(Path('config/site.json').read_text())
-assert config['service_role']=='buyer'
+assert config['service_role']=='introducer'
 assert 'ADAC Recovery Solutions, trading as Scrap Cars Sorted, is operated by Mr Mihail Adrian Cerchez as a sole trader' in production_policies(config)[0]
 assert 'CBDU616775' in production_policies(config)[0]
 assert 'ADY CAR recovery' in production_policies(config)[0]
+assert 'Scrap Car Network, the vehicle buyer' in production_policies(config)[0]
+assert 'Scrap Car Network, which pays you directly' in production_policies(config)[1]
+assert 'it does not buy your vehicle' in production_policies(config)[1]
 with tempfile.TemporaryDirectory() as folder:
  root=Path(folder);(root/'config').mkdir()
  def write(): (root/'config/site.json').write_text(json.dumps(config))
