@@ -27,7 +27,7 @@ def business_details(config):
  details=f"<p>{identity}.<br>{e('business_address')}<br><a href=\"mailto:{e('contact_email')}\">{e('contact_email')}</a></p>"
  if config.get('company_number'):details+=f"<p>Company number {e('company_number')}. Registered in {e('company_jurisdiction')}.</p>"
  if config.get('vat_number'):details+=f"<p>VAT number: {e('vat_number')}.</p>"
- details+=f"<p>{e('licence_details')}</p>"
+ if config.get('licence_details'):details+=f"<p>{e('licence_details')}</p>"
  return details
 
 def production_policies(config):
