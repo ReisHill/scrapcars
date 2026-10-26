@@ -13,7 +13,8 @@
   "waste_registration": "Environment Agency upper-tier waste carrier, broker and dealer registration CBDU616775, registered to Mihail Adrian Cerchez trading as ADY CAR recovery",
   "google_business_url": "",
   "licence_details": "",
-  "service_role": "buyer",
+  "service_role": "introducer",
+  "vehicle_buyer": "Scrap Car Network",
   "quote_retention": "We normally delete enquiries that do not lead to a sale 12 months after our last contact. We may keep records longer where needed for a legal obligation or a specific dispute.",
   "provider_retention_and_transfers": "Resend stores sent email content and logs in the United States for 30 days under its data processing terms and transfer safeguards. Our business email is hosted by Microsoft. Cloudflare processes website requests to host and protect the service; these providers may process data outside the UK under applicable safeguards.",
   "policies_reviewed": true
