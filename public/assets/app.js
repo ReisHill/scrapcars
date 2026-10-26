@@ -125,7 +125,7 @@ if (quoteForm) {
       postcode: normalisePostcode(postcodeInput.value),
       email: quoteForm.elements.email.value.trim(),
       phone: phoneValue || null,
-      source: 'scraplocal-website'
+      source: 'scrapcarsorted-website'
     };
     const error = document.querySelector('#form-error');
     error.hidden = true;

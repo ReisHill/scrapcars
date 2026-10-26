@@ -1,13 +1,13 @@
 # Lean launch plan
 
-Prepared 26 October 2026. No domain has been bought, no Cloudflare resource has been created, and no real email has been sent during preparation.
+Prepared 26 October 2026. The domain `scrapcarsorted.co.uk` is connected to Cloudflare. Google Search Console and Bing Webmaster Tools are verified. The site remains a noindexed preview, and no real quote email has been sent.
 
 ## Decisions needed
 
-- Final brand and domain. Suggested directions to check at a registrar: **Scrap Car Sorted** (`scrapcarsorted.co.uk`), **Scrap Car Hop** (`scrapcarhop.co.uk`), **Scrappy Car** (`scrappycar.co.uk`). These are naming ideas, not verified available domains or trademark clearance. Prefer a short .co.uk; avoid buying an expensive exact-match name just for SEO.
+- The public brand is **Scrap Cars Sorted** at `scrapcarsorted.co.uk`. Confirm whether this is also the registered legal name or a trading name of another person or entity.
 - Google Business Profile URL and the real-world business name it represents. Keep the website identity consistent with that business, or clearly explain a separate trading name. Do not rename the profile just to add search keywords or create a duplicate listing.
 - Legal owner/operator, contact/registered address, public email and optional business phone, company/VAT information where applicable.
-- Whether this business buys vehicles itself or introduces enquiries to another buyer; licence/registration details and actual receiving/collection arrangements.
+- The website passes enquiries to one buying and collection partner. Confirm the buyer's identity, licence/registration details and actual receiving/collection arrangements before live enquiries begin. Identify the buyer before a customer agrees to sell.
 - Quote inbox, email provider account and verified sending domain.
 - Actual enquiry retention period, mailbox/provider retention and international-transfer arrangements. Check the ICO fee self-assessment where applicable. Do not publish arbitrary retention promises.
 
