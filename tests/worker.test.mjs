@@ -26,6 +26,7 @@ test('email is accepted only after server coverage and provider acceptance',asyn
  assert.match(business.text,/Phone: Not provided/);assert.doesNotMatch(business.text,/192\.0\.2\.1/);
  assert.deepEqual(customer.to,[lead.email]);assert.equal(customer.reply_to,'quotes@example.com');
  assert.match(customer.subject,/Scrap Cars Sorted/);assert.match(customer.text,/very shortly/);
+ assert.match(customer.text,/Scrap Car Network, the vehicle buyer/);
  assert.match(customer.html,/Scrap Cars Sorted/);assert.doesNotMatch(customer.html,/seller@example.com/);
  assert.equal(calls[1].options.headers['Idempotency-Key'],'quote-pair/'+lead.submission_id);
 });
